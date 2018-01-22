@@ -10,6 +10,7 @@
     "firebase": "^4.9.0",
     "react": "16.2.0",
     "react-native": "0.52.0",
+    "react-native-emoji": "^1.2.0",
     "react-native-masked-text": "^1.6.5",
     "react-native-swiper": "^1.5.13",
     "react-native-textinput-effects": "^0.4.2"

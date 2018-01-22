@@ -13,7 +13,9 @@ const Button = ({ onPress, backgroundColor, children }) => {
       style={buttonStyle}
       activeOpacity={0.8}
     >
-      <Text style={textStyle}>
+      <Text
+        style={textStyle}
+        >
         {children}
       </Text>
     </TouchableOpacity>

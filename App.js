@@ -22,6 +22,9 @@ export default class App extends Component<{}> {
     // submitState: null, // null = default, true = success, false = error
     sean: '#219cd9',
     olivia: 'orange',
+    totalsean: 0,
+    totalolivia: 0,
+    index: 0
   };
 
   componentWillMount() {
@@ -34,10 +37,12 @@ export default class App extends Component<{}> {
       messagingSenderId: '216322644054',
     });
 
-    firebase.database().ref('/users/sean').once('value')
-      .then((snapshot) => {
-        console.log(snapshot.val());
-      });
+    firebase.database().ref('/stats/total').on('value', (snapshot) => {
+      // console.log(snapshot.val());
+      this.setState({ totalsean: snapshot.val().sean });
+      this.setState({ totalolivia: snapshot.val().olivia })
+      console.log(this.state);
+    });
   }
 
   onChangeText(text) {
@@ -52,12 +57,22 @@ export default class App extends Component<{}> {
       firebase.database().ref(`/users/${user}/${year}/${month}`)
         .push(this.state.price, (err) => {
           if (err) {
-            console.log('error');
+            console.log(err);
             this.setState({ [user]: '#d9534f' });
           } else {
-            console.log('success!');
-            this.setState({ price: 0, [user]: '#5cb85c' });
-          }
+            console.log('successfully added expense');
+            const totalUser = `total${user}`;
+            const total = this.state[totalUser] + this.state.price;
+            firebase.database().ref(`/stats/total/${user}`)
+              .set(total, (error) => {
+                if (error) {
+                  console.log(error);
+                  this.setState({ [user]: '#d9534f' });
+                } else {
+                  this.setState({ price: 0, [user]: '#5cb85c' });
+                }
+              });
+            }
         });
       console.log(`Pushed: ${this.state.price} to ${user}`);
     }
@@ -96,6 +111,22 @@ export default class App extends Component<{}> {
   //   return color;
   // }
 
+  setIndex() {
+    if (this.state.totalsean > this.state.totalolivia) {
+      this.setState({ index: 1 });
+    } else {
+      this.setState({ index: 0 });
+    }
+  }
+
+  chooseWho() {
+    if (this.state.totalsean > this.state.totalolivia) {
+      return { sean: 'Sean', olivia: 'Olivia is behind :(' };
+    } else {
+      return { sean: 'Sean is behind :(', olivia: 'Olivia' };
+    }
+  }
+
   render() {
     return (
       <View style={styles.headerContainer}>
@@ -121,6 +152,7 @@ export default class App extends Component<{}> {
             onPress={this.onSubmit.bind(this)}
             backgroundColor={this.buttonColor()}
           >Submit</Button> */}
+          {/* <Text style={styles.who}>{this.chooseWho()}</Text> */}
           <View style={{ height: 45 }}>
             <Swiper
               ref={'swiper'}
@@ -131,11 +163,11 @@ export default class App extends Component<{}> {
               <Button
                 onPress={this.onSubmit.bind(this, 'sean')}
                 backgroundColor={this.state.sean}
-              >Add to Sean</Button>
+              >{this.chooseWho().sean}</Button>
               <Button
                 onPress={this.onSubmit.bind(this, 'olivia')}
                 backgroundColor={this.state.olivia}
-              >Add to Olivia</Button>
+              >{this.chooseWho().olivia}</Button>
             </Swiper>
           </View>
         </View>
@@ -169,5 +201,8 @@ const styles = StyleSheet.create({
   text: {
     color: '#fff',
     fontSize: 18,
+  },
+  who: {
+    paddingTop: -20,
   }
 });
