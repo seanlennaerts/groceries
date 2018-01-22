@@ -9,8 +9,7 @@ import {
   StyleSheet,
   Text,
   View,
-  StatusBar,
-  Switch
+  StatusBar
 } from 'react-native';
 import firebase from 'firebase';
 import Swiper from 'react-native-swiper';
@@ -20,7 +19,9 @@ import { Header, Input, Button } from './src/components/common';
 export default class App extends Component<{}> {
   state = {
     price: 0,
-    state: null, // null, true = success, false = error
+    // submitState: null, // null = default, true = success, false = error
+    sean: '#219cd9',
+    olivia: 'orange',
   };
 
   componentWillMount() {
@@ -32,27 +33,30 @@ export default class App extends Component<{}> {
       storageBucket: '',
       messagingSenderId: '216322644054',
     });
+
+    firebase.database().ref('/users/sean').once('value')
+      .then((snapshot) => {
+        console.log(snapshot.val());
+      });
   }
 
   onChangeText(text) {
-    this.setState({ price: this.refs.price.getRawValue() });
+    this.setState({ price: this.refs.price.getRawValue(), sean: '#219cd9', olivia: 'orange' });
   }
 
   onSubmit(user) {
     if (this.state.price > 0) {
       const date = new Date();
-      const day = date.getDate();
       const month = date.getMonth() + 1;
       const year = date.getFullYear();
-      firebase.database().ref(`/users/${user}/${year}/${month}/${day}`)
+      firebase.database().ref(`/users/${user}/${year}/${month}`)
         .push(this.state.price, (err) => {
           if (err) {
             console.log('error');
-            this.setState({ state: false })
+            this.setState({ [user]: '#d9534f' });
           } else {
             console.log('success!');
-            this.setState({ price: 0, state: true });
-            console.log(this.state);
+            this.setState({ price: 0, [user]: '#5cb85c' });
           }
         });
       console.log(`Pushed: ${this.state.price} to ${user}`);
@@ -63,14 +67,14 @@ export default class App extends Component<{}> {
   //   console.log('Olivia');
   // }
 
-  onIndexChanged(index) {
-    this.setState({ user: index });
-    if (this.state.user === 0) {
-      console.log('User is Sean');
-    } else if (this.state.user === 1) {
-      console.log('User is Olivia');
-    }
-  }
+  // onIndexChanged(index) {
+  //   this.setState({ user: index });
+  //   if (this.state.user === 0) {
+  //     console.log('User is Sean');
+  //   } else if (this.state.user === 1) {
+  //     console.log('User is Olivia');
+  //   }
+  // }
 
   // onTouchEnd(e, state, context) {
   //   if (context.state.index === this.state.user) {
@@ -82,15 +86,15 @@ export default class App extends Component<{}> {
   //   }
   // }
 
-  buttonColor() {
-    console.log('Choosing buttonColor');
-    if (this.state.state === true) {
-      return '#5cb85c';
-    } else if (this.state.state === false) {
-      return '#d9534f';
-    }
-    return '#219cd9';
-  }
+  // buttonColor(color, user) {
+  //   console.log(`Choosing buttonColor: ${color}, ${user}`);
+  //   if (this.state.submitState === true && this.state.submitUser === user) {
+  //     return '#5cb85c';
+  //   } else if (this.state.submitState === false && this.state.submitUser === user) {
+  //     return '#d9534f';
+  //   }
+  //   return color;
+  // }
 
   render() {
     return (
@@ -126,14 +130,11 @@ export default class App extends Component<{}> {
             >
               <Button
                 onPress={this.onSubmit.bind(this, 'sean')}
-                backgroundColor='#219cd9'
+                backgroundColor={this.state.sean}
               >Add to Sean</Button>
-              {/* <View style={styles.slide2}>
-                <Text style={styles.text}>Add to Olivia</Text>
-              </View> */}
               <Button
                 onPress={this.onSubmit.bind(this, 'olivia')}
-                backgroundColor='orange'
+                backgroundColor={this.state.olivia}
               >Add to Olivia</Button>
             </Swiper>
           </View>
