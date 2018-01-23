@@ -16,31 +16,24 @@ import Swiper from 'react-native-swiper';
 import { TextInputMask } from 'react-native-masked-text';
 import { Header, Input, Button } from './src/components/common';
 
+const key = require('./firebase.json');
+
 export default class App extends Component<{}> {
   state = {
     price: 0,
-    // submitState: null, // null = default, true = success, false = error
     sean: '#219cd9',
     olivia: 'orange',
     totalsean: 0,
     totalolivia: 0,
-    index: 0
   };
 
   componentWillMount() {
-    firebase.initializeApp({
-      apiKey: '***REMOVED***',
-      authDomain: 'grocery-expenses.firebaseapp.com',
-      databaseURL: 'https://grocery-expenses.firebaseio.com',
-      projectId: 'grocery-expenses',
-      storageBucket: '',
-      messagingSenderId: '216322644054',
-    });
+    firebase.initializeApp(key);
 
     firebase.database().ref('/stats/total').on('value', (snapshot) => {
       // console.log(snapshot.val());
       this.setState({ totalsean: snapshot.val().sean });
-      this.setState({ totalolivia: snapshot.val().olivia })
+      this.setState({ totalolivia: snapshot.val().olivia });
       console.log(this.state);
     });
   }
@@ -77,47 +70,6 @@ export default class App extends Component<{}> {
       console.log(`Pushed: ${this.state.price} to ${user}`);
     }
   }
-  //
-  // onSubmitOlivia() {
-  //   console.log('Olivia');
-  // }
-
-  // onIndexChanged(index) {
-  //   this.setState({ user: index });
-  //   if (this.state.user === 0) {
-  //     console.log('User is Sean');
-  //   } else if (this.state.user === 1) {
-  //     console.log('User is Olivia');
-  //   }
-  // }
-
-  // onTouchEnd(e, state, context) {
-  //   if (context.state.index === this.state.user) {
-  //     console.log('submitting');
-  //     console.log(context.state.index);
-  //     console.log(state.index);
-  //   } else {
-  //     console.log('scrolling');
-  //   }
-  // }
-
-  // buttonColor(color, user) {
-  //   console.log(`Choosing buttonColor: ${color}, ${user}`);
-  //   if (this.state.submitState === true && this.state.submitUser === user) {
-  //     return '#5cb85c';
-  //   } else if (this.state.submitState === false && this.state.submitUser === user) {
-  //     return '#d9534f';
-  //   }
-  //   return color;
-  // }
-
-  setIndex() {
-    if (this.state.totalsean > this.state.totalolivia) {
-      this.setState({ index: 1 });
-    } else {
-      this.setState({ index: 0 });
-    }
-  }
 
   chooseWho() {
     if (this.state.totalsean > this.state.totalolivia) {
@@ -148,11 +100,6 @@ export default class App extends Component<{}> {
             value={this.state.price}
             keyboardType='number-pad'
           />
-          {/* <Button
-            onPress={this.onSubmit.bind(this)}
-            backgroundColor={this.buttonColor()}
-          >Submit</Button> */}
-          {/* <Text style={styles.who}>{this.chooseWho()}</Text> */}
           <View style={{ height: 45 }}>
             <Swiper
               ref={'swiper'}
@@ -185,24 +132,5 @@ const styles = StyleSheet.create({
   },
   headerContainer: {
     flex: 1
-  },
-  slide1: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#219cd9',
-  },
-  slide2: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'orange',
-  },
-  text: {
-    color: '#fff',
-    fontSize: 18,
-  },
-  who: {
-    paddingTop: -20,
   }
 });

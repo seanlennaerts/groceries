@@ -1,1 +1,7 @@
-{"extends": "rallycoding"}
+{
+  "extends": "rallycoding",
+  "rules": {
+    "comma-dangle": ["error", "always-multiline"],
+    "jsx-quotes": ["error", "prefer-double"],
+  }
+}
