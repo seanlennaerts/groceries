@@ -1,6 +1,6 @@
 # Grocery Expenses
 
-Replacing the Google sheet with this app connected to Firebase to keep track of Grocery Expenses.
+As much as I love spreadsheets it is time to exercise my newfound React Native skills and make a simple app for my roommate and I to track our grocery expenses. By using Firebase's realtime database updates are seen instantly across devices.
 
 ## Screenshots
 
